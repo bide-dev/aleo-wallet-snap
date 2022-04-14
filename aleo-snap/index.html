@@ -1,0 +1,114 @@
+<!doctype html>
+<html>
+</head>
+<title>Hello, Snaps!</title>
+<link rel="icon" type="image/svg" href="./images/icon.svg" />
+</head>
+
+<body>
+  <h1>Aleo Snap</h1>
+  <details>
+    <summary>Installation Instructions</summary>
+    In order to run this demo, we need to install a modified snap version:
+    <ul>
+      <li>Pull down this <a href="https://github.com/MetaMask/metamask-extension/tree/eth-denver-2022">branch</a> </li>
+      <li>Build the extension locally: <code>yarn setup && yarn dist --build-type flask</code></li>
+      <li>Load the unpacked extension (see "custom build" instructions) from <a
+          href="https://github.com/MetaMask/metamask-extension/tree/eth-denver-2022#other-docs">here</a></li>
+    </ul>
+    </ul>
+  </details>
+
+  <h2>Aleo wallet implementation using MetaMask Snaps</h2>
+  <p>First, let's connect to MetaMask and install the snap.</p>
+  <p>If it's your first time using this snap - click once again to install it.</p>
+  <button class="connect">Connect</button>
+  <br />
+
+  <div id="accountButtonDiv" style="display: none;">
+    <p>Now, let's create an Aleo-compatible wallet inside the snap.</p>
+    <button class="getAccount">Get Account</button>
+    <br />
+  </div>
+
+  <div id="account" style="display: none;">
+    <h3>Account</h3>
+    <ul>
+      <li>
+        Address: <code><span id="accountAddress"></span></code>
+      </li>
+      <li>
+        View Key: <code><span id="viewKey"></span></code>
+      </li>
+      <li>
+        Private Key: <code><span id="privateKey"></span></code>
+      </li>
+    </ul>
+  </div>
+  <br />
+
+  <div id="sendTxBtnDiv" style="display: none;">
+    <p>Finally, we send a transaction using our wallet.</p>
+    <button class="sendTx">Send Transaction</button>
+  </div>
+  <br />
+</body>
+
+<script>
+  const snapId = `local:${window.location.href}`;
+  // const snapId = 'npm:aleo-snap';
+
+  const connectButton = document.querySelector('button.connect')
+  const getAccountButton = document.querySelector('button.getAccount')
+  const sendTxButton = document.querySelector('button.sendTx')
+
+  connectButton.addEventListener('click', connect)
+  getAccountButton.addEventListener('click', getAccount)
+
+  async function connect() {
+    try {
+      await ethereum.request({
+        method: 'wallet_enable',
+        params: [{
+          wallet_snap: { [snapId]: {} },
+        }]
+      })
+
+      document.querySelector('#accountButtonDiv').style.display = 'block'
+    } catch (error) {
+      // The `wallet_enable` call will throw if the requested permissions are
+      // rejected.
+      if (error.code === 4001) {
+        console.error('The user rejected the request.');
+        alert('The user rejected the request.');
+      } else {
+        console.error(error)
+        alert('Error: ' + error.message || error)
+      }
+    }
+  }
+
+  async function getAccount() {
+    try {
+      const account = await ethereum.request({
+        method: 'wallet_invokeSnap',
+        params: [snapId, {
+          method: 'aleo_get_account',
+          params: ['fake-seed'],
+        }]
+      })
+
+      console.log(JSON.stringify(account, null, 2))
+      document.querySelector('#accountAddress').innerText = account.address
+      document.querySelector('#viewKey').innerText = account.view_key
+      document.querySelector('#privateKey').innerText = 'Never leaves MetaMask!'
+      document.querySelector('#account').style.display = 'block'
+      document.querySelector('#sendTxBtnDiv').style.display = 'block'
+    } catch (error) {
+      console.error(error)
+      alert('Error: ' + error.message || error)
+    }
+  }
+</script>
+
+</html>

@@ -1,0 +1,46 @@
+name: Build aleo-snap
+
+env:
+  NODE_VERSION: "14.x"
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  deploy-aleo-snap:
+    name: Build aleo-snap
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Install wasm-pack
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+
+      - name: Install latest stable Rust version
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+
+      - name: Use Node ${{ matrix.node }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Buid aleo-wasm
+        run: wasm-pack build --target no-modules
+        working-directory: aleo/wasm
+
+      - name: Install aleo-snap
+        uses: bahmutov/npm-install@v1
+        with:
+          working-directory: aleo-snap
+
+      - name: Build aleo-snap
+        run: yarn build
+        working-directory: aleo-snap
