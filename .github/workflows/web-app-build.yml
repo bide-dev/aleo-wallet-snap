@@ -1,4 +1,4 @@
-name: Build aleo-snap
+name: Build web app
 
 env:
   NODE_VERSION: "14.x"
@@ -10,12 +10,12 @@ on:
     branches: [main]
 
 concurrency:
-  group: ci-aleo-snap-${{ github.ref }}-1
+  group: ci-web-app-build-${{ github.ref }}-1
   cancel-in-progress: true
 
 jobs:
-  deploy-aleo-snap:
-    name: Build aleo-snap
+  build-web-app:
+    name: "Build web app"
     runs-on: ubuntu-latest
 
     steps:
@@ -35,15 +35,11 @@ jobs:
         with:
           node-version: 14.x
 
-      - name: Buid aleo-wasm
-        run: wasm-pack build --target no-modules
-        working-directory: aleo/wasm
-
-      - name: Install aleo-snap
+      - name: Install npm deps and build (with cache)
         uses: bahmutov/npm-install@v1
         with:
-          working-directory: aleo-snap
+          working-directory: web-app
 
-      - name: Build aleo-snap
-        run: yarn build
-        working-directory: aleo-snap
+      - name: Build web-app
+        run: yarn run build
+        working-directory: web-app

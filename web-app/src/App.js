@@ -38,9 +38,6 @@ function App() {
           <Menu.Item key="2" onClick={() => setMenuIndex(1)}>
             Recover Account
           </Menu.Item>
-          <Menu.Item key="3" onClick={() => setMenuIndex(2)}>
-            Send Transaction
-          </Menu.Item>
         </Menu>
       </Header>
       <Content style={{ padding: "50px 50px" }}>
