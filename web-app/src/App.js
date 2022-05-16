@@ -68,7 +68,7 @@ function App() {
       </Content>
       <Footer style={{ textAlign: "center" }}>
         Visit{" "}
-        <a href="https://github.com/piotr-roslaniec/ethdenver-2022">
+        <a href="https://github.com/piotr-roslaniec/aleo-snap">
           our Github repo
         </a>
         .

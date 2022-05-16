@@ -1,5 +1,12 @@
 # `aleo-snap`
 
+## Installation
+
+```bash
+yarn install
+npx husky install
+```
+
 ## Usage
 
 Build deps:

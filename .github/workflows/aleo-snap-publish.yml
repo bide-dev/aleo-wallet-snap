@@ -1,24 +1,28 @@
-name: Build aleo-snap
+name: Release aleo-snap
 
 env:
   NODE_VERSION: "14.x"
 
 on:
-  pull_request:
-    branches: [main]
+  push:
+    branches: [main, beta]
+  repository_dispatch:
+    types: [semantic-release]
 
 concurrency:
-  group: ci-aleo-snap-build-${{ github.ref }}-1
+  group: ci-aleo-snap-release-${{ github.ref }}-1
   cancel-in-progress: true
 
 jobs:
-  build-aleo-snap:
+  release-aleo-snap:
     name: Build aleo-snap
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       - name: Install wasm-pack
         run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
@@ -45,3 +49,9 @@ jobs:
       - name: Build aleo-snap
         run: yarn build
         working-directory: aleo-snap
+
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: cd aleo-snap && npx semantic-release
