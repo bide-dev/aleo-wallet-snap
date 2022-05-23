@@ -39,7 +39,7 @@ module.exports = {
         new webpack.DefinePlugin({
             __SNAP_ID__: isDev
                 ? JSON.stringify("local:http://localhost:8081/")
-                : JSON.stringify("npm:aleo-snap:0.0.1"),
+                : JSON.stringify("npm:aleo-snap:0.0.1-beta1"),
         }),
     ],
     experiments: {

@@ -1,6 +1,6 @@
 {
   "name": "aleo-snap",
-  "version": "0.0.1",
+  "version": "0.0.1-beta1",
   "description": "Aleo Wallet implemented with MetaMask Snap",
   "repository": {
     "type": "git",
