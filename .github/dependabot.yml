@@ -9,7 +9,7 @@ updates:
     schedule:
       interval: "daily"
   - package-ecosystem: "npm"
-    directory: "aleo-snap-bundler"
+    directory: "aleo-wasm-bundler"
     schedule:
       interval: "daily"
   - package-ecosystem: "cargo"
