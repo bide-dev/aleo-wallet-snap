@@ -44,8 +44,9 @@ jobs:
         run: yarn build
         working-directory: aleo-snap
 
-      - name: Release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: cd aleo-snap && npx semantic-release
+      # TODO: Enable
+      # - name: Release
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      #   run: cd aleo-snap && npx semantic-release
