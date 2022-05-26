@@ -1,0 +1,43 @@
+name: Build aleo-snap
+
+env:
+  NODE_VERSION: "14.x"
+
+on:
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-aleo-snap-build-${{ github.ref }}-1
+  cancel-in-progress: true
+
+jobs:
+  build-aleo-snap:
+    name: Build aleo-snap
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+
+      - name: Install aleo-wasm-bundler
+        uses: bahmutov/npm-install@v1
+        with:
+          working-directory: aleo-wasm-bundler
+
+      - name: Build aleo-wasm-bundler
+        run: yarn build
+        working-directory: aleo-wasm-bundler
+
+      - name: Install aleo-snap
+        uses: bahmutov/npm-install@v1
+        with:
+          working-directory: aleo-snap
+
+      - name: Build aleo-snap
+        run: yarn build
+        working-directory: aleo-snap

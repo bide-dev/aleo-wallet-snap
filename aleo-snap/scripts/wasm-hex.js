@@ -1,7 +1,10 @@
 const { promises: fs } = require('fs');
 const path = require('path');
 
-const WASM_PATH = path.join(__dirname, '../../aleo/wasm/pkg/sdk_bg.wasm');
+const WASM_PATH = path.join(
+  __dirname,
+  '../../aleo-wasm-bundler/node_modules/aleo-sdk/sdk_bg.wasm',
+);
 
 main();
 
