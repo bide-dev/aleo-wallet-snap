@@ -12,7 +12,3 @@ updates:
     directory: "aleo-wasm-bundler"
     schedule:
       interval: "daily"
-  - package-ecosystem: "cargo"
-    directory: "aleo"
-    schedule:
-      interval: "daily"
