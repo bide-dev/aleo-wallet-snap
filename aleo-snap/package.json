@@ -1,6 +1,6 @@
 {
   "name": "aleo-snap",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Aleo Wallet implemented with MetaMask Snap",
   "repository": {
     "type": "git",
@@ -14,20 +14,23 @@
     "snap.manifest.json"
   ],
   "scripts": {
-    "build:clean": "rm -rf node_modules/aleo-wasm-bundler && yarn install --check-files && yarn clean && yarn build",
-    "build": "yarn clean && yarn wasm:hex && mm-snap build --verboseErrors && cp snap.manifest.json dist/",
+    "dev": "nodemon --watch src/ --ext ts --exec 'yarn build && yarn serve'",
     "serve": "mm-snap serve",
-    "clean": "rimraf dist",
+    "build": "yarn clean && yarn build:wasm && yarn build:tsc && mm-snap build --verboseErrors && cp snap.manifest.json dist/",
+    "build:tsc": "tsc",
+    "build:wasm": "node ./scripts/wasm-hex.js",
+    "build:clean": "rm -rf node_modules/aleo-wasm-bundler && yarn install --check-files && yarn clean && yarn build",
+    "clean": "rimraf dist build",
+    "lint": "yarn lint:eslint && yarn lint:misc --check",
     "lint:eslint": "eslint . --cache --ext js,ts",
     "lint:misc": "prettier '**/*.json' '**/*.md' '!CHANGELOG.md' --ignore-path .gitignore",
-    "lint": "yarn lint:eslint && yarn lint:misc --check",
     "lint:fix": "yarn lint:eslint --fix && yarn lint:misc --write",
-    "wasm:hex": "node ./scripts/wasm-hex.js",
-    "prepare": "cd .. && husky install aleo-snap/.husky"
+    "prepare": "cd .. && husky install aleo-snap/.husky",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@metamask/key-tree": "^3.0.1",
-    "aleo-wasm-bundler": "file:../aleo-wasm-bundler",
+    "aleo-sdk": "file:../aleo-wasm-bundler",
     "eth-rpc-errors": "^4.0.3",
     "sha3": "^2.1.4"
   },
@@ -48,8 +51,10 @@
     "eslint-plugin-prettier": "^3.4.0",
     "husky": "^8.0.1",
     "mkdirp": "^1.0.4",
+    "nodemon": "^2.0.16",
     "prettier": "^2.3.2",
-    "rimraf": "^3.0.2"
+    "rimraf": "^3.0.2",
+    "typescript": "^4.7.2"
   },
   "publishConfig": {
     "access": "public",

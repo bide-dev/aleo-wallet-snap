@@ -6,14 +6,13 @@ const WASM_PATH = path.join(
   '../../aleo-wasm-bundler/node_modules/aleo-sdk/sdk_bg.wasm',
 );
 
-main();
-
 async function main() {
   const wasmBin = await fs.readFile(WASM_PATH);
   const wasmHex = wasmBin.toString('hex');
   const jsFileString = `
-const PROGRAM_WASM_HEX = '${wasmHex}';
-module.exports = { PROGRAM_WASM_HEX };
+export const PROGRAM_WASM_HEX: string = '${wasmHex}';
 `;
-  await fs.writeFile('./src/wasm.js', jsFileString);
+  await fs.writeFile('./src/wasm.ts', jsFileString);
 }
+
+main();
