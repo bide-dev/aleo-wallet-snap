@@ -1,6 +1,6 @@
 {
   "name": "aleo-snap",
-  "version": "0.0.6",
+  "version": "0.0.8",
   "description": "Aleo Wallet implemented with MetaMask Snap",
   "repository": {
     "type": "git",
@@ -14,7 +14,7 @@
     "snap.manifest.json"
   ],
   "scripts": {
-    "dev": "nodemon --watch src/ --ext ts --exec 'yarn build && yarn serve'",
+    "dev": "nodemon --watch src/ --ext ts --ignore src/wasm.ts --exec 'yarn build && yarn serve'",
     "serve": "mm-snap serve",
     "build": "yarn clean && yarn build:wasm && yarn build:tsc && mm-snap build --verboseErrors && cp snap.manifest.json dist/",
     "build:tsc": "tsc",
@@ -25,31 +25,25 @@
     "lint:eslint": "eslint . --cache --ext js,ts",
     "lint:misc": "prettier '**/*.json' '**/*.md' '!CHANGELOG.md' --ignore-path .gitignore",
     "lint:fix": "yarn lint:eslint --fix && yarn lint:misc --write",
-    "prepare": "cd .. && husky install aleo-snap/.husky",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@metamask/key-tree": "^3.0.1",
-    "aleo-sdk": "file:../aleo-wasm-bundler",
+    "aleo-wasm-bundler": "workspace:*",
     "eth-rpc-errors": "^4.0.3",
     "sha3": "^2.1.4"
   },
   "devDependencies": {
-    "@commitlint/cli": "^17.0.0",
-    "@commitlint/config-conventional": "^17.0.0",
     "@metamask/eslint-config": "^8.0.0",
     "@metamask/eslint-config-jest": "^8.0.0",
     "@metamask/eslint-config-nodejs": "^8.0.0",
     "@metamask/snaps-cli": "^0.15.0",
-    "@semantic-release/changelog": "^6.0.1",
-    "@semantic-release/git": "^10.0.1",
     "eslint": "^7.30.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-import": "^2.23.4",
     "eslint-plugin-jest": "^24.4.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^3.4.0",
-    "husky": "^8.0.1",
     "mkdirp": "^1.0.4",
     "nodemon": "^2.0.16",
     "prettier": "^2.3.2",

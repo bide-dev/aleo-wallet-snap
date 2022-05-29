@@ -3,7 +3,7 @@ const path = require('path');
 
 const WASM_PATH = path.join(
   __dirname,
-  '../../aleo-wasm-bundler/node_modules/aleo-sdk/sdk_bg.wasm',
+  '../../../node_modules/aleo-sdk/sdk_bg.wasm',
 );
 
 async function main() {

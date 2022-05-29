@@ -1,52 +1,33 @@
-name: Release aleo-snap
-
-env:
-  NODE_VERSION: "14.x"
+name: Release
 
 on:
   push:
-    branches: [main, beta]
-  repository_dispatch:
-    types: [semantic-release]
+    tags:
+      - "v*"
 
 concurrency:
-  group: ci-aleo-snap-release-${{ github.ref }}-1
+  group: ci-release-${{ github.ref }}-1
   cancel-in-progress: true
 
 jobs:
-  release-aleo-snap:
-    name: Build aleo-snap
+  release:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
       - uses: actions/setup-node@v3
+        env:
+          NODE_AUTH_TOKEN: "${{ secrets.NPM_TOKEN }}"
         with:
+          cache: "yarn"
           node-version: 14.x
+          registry-url: "https://registry.npmjs.org"
 
-      - name: Install aleo-wasm-bundler
-        uses: bahmutov/npm-install@v1
-        with:
-          working-directory: aleo-wasm-bundler
+      - name: Install dependencies
+        run: yarn install --immutable
 
-      - name: Build aleo-wasm-bundler
+      - name: Build packages
         run: yarn build
-        working-directory: aleo-wasm-bundler
 
-      - name: Install aleo-snap
-        uses: bahmutov/npm-install@v1
-        with:
-          working-directory: aleo-snap
-
-      - name: Build aleo-snap
-        run: yarn build
-        working-directory: aleo-snap
-
-      # TODO: Enable
-      # - name: Release
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #     NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      #   run: cd aleo-snap && npx semantic-release
+      - name: "Deploy packages to NPM"
+        run: yarn publish

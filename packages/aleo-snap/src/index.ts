@@ -1,7 +1,8 @@
 import { ethErrors } from 'eth-rpc-errors';
 import { BIP44CoinTypeNode, getBIP44AddressKeyDeriver, JsonBIP44CoinTypeNode } from '@metamask/key-tree';
 import { SHA3 } from 'sha3';
-import initAleoSdk, { InitOutput, Account } from 'aleo-sdk';
+import * as aleoSdk from 'aleo-wasm-bundler';
+import { InitOutput, Account } from 'aleo-wasm-bundler';
 
 import { PROGRAM_WASM_HEX } from './wasm';
 
@@ -20,7 +21,7 @@ const initializeWasm = async () => {
   try {
     const wasmBuffer = arrayBufferFromHex(PROGRAM_WASM_HEX);
     const wasmModule = await WebAssembly.compile(wasmBuffer);
-    wasm = await initAleoSdk(wasmModule);
+    wasm = await aleoSdk.default(wasmModule);
   } catch (error) {
     console.error('Failed to initialize WebAssembly module.', error);
     throw error;
