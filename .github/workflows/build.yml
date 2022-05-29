@@ -1,43 +1,27 @@
-name: Build aleo-snap
-
-env:
-  NODE_VERSION: "14.x"
+name: Build
 
 on:
   pull_request:
     branches: [main]
 
 concurrency:
-  group: ci-aleo-snap-build-${{ github.ref }}-1
+  group: ci-build-${{ github.ref }}-1
   cancel-in-progress: true
 
 jobs:
-  build-aleo-snap:
-    name: Build aleo-snap
+  build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
       - uses: actions/setup-node@v3
         with:
+          cache: "yarn"
           node-version: 14.x
+          registry-url: "https://registry.npmjs.org"
 
-      - name: Install aleo-wasm-bundler
-        uses: bahmutov/npm-install@v1
-        with:
-          working-directory: aleo-wasm-bundler
+      - name: Install dependencies
+        run: yarn install --immutable
 
-      - name: Build aleo-wasm-bundler
+      - name: Build packages
         run: yarn build
-        working-directory: aleo-wasm-bundler
-
-      - name: Install aleo-snap
-        uses: bahmutov/npm-install@v1
-        with:
-          working-directory: aleo-snap
-
-      - name: Build aleo-snap
-        run: yarn build
-        working-directory: aleo-snap
