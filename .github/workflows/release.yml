@@ -5,10 +5,6 @@ on:
     tags:
       - "v*"
 
-concurrency:
-  group: ci-release-${{ github.ref }}-1
-  cancel-in-progress: true
-
 jobs:
   release:
     runs-on: ubuntu-latest

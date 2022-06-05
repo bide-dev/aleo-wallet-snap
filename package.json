@@ -5,7 +5,7 @@
         "packages/*"
     ],
     "scripts": {
-        "build": "yarn workspaces foreach -vitp run build",
+        "build": "yarn workspaces foreach -vitp run build && cp packages/aleo-snap/snap.manifest.json packages/aleo-snap-ui/dist/",
         "dev": "yarn workspaces foreach -vitp run dev",
         "typecheck": "yarn workspaces foreach -vip run typecheck",
         "lint": "yarn workspaces foreach -vip run lint",
