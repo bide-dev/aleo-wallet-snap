@@ -10,7 +10,7 @@
   "scripts": {
     "build": "rollup -c"
   },
-  "license": "GPL-3.0-only",
+  "license": "MIT",
   "dependencies": {
     "aleo-sdk": "^0.3.2-beta.1"
   },
