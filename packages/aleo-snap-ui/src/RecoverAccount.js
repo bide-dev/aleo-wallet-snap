@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Button, Card, Col, Divider, Form, Input, Row } from "antd";
 
 import { CopyButton } from "./CopyButton";
-import { getAccount } from "./snap";
+import { getAccountFromSeed } from "./snap";
 
 const layout = { labelCol: { span: 3 }, wrapperCol: { span: 21 } };
 
@@ -16,7 +16,7 @@ export const RecoverAccount = () => {
     setRecovered(null);
     setLoadingRecovery(true);
     setTimeout(() => {}, 100);
-    const recovered = await getAccount(userSeed);
+    const recovered = await getAccountFromSeed(userSeed);
     if (!recovered) {
       // TODO: use setError
       alert("Failed to recover an account");
@@ -32,7 +32,7 @@ export const RecoverAccount = () => {
     recoveredAccount !== null ? "Stays safe inside MetaMask!" : "";
   const matchingSeed = () => (seed !== null ? seed : "");
   const viewKey = () =>
-    recoveredAccount !== null ? recoveredAccount.view_key : "";
+    recoveredAccount !== null ? recoveredAccount.viewKey : "";
   const address = () =>
     recoveredAccount !== null ? recoveredAccount.address : "";
 
@@ -47,7 +47,7 @@ export const RecoverAccount = () => {
         <Form {...layout}>
           <p>Info: You need to generate account first.</p>
           <p>
-            If you've set your vanity address prefix to "e" in the previous
+            If you've set your vanity account prefix to "e" in the previous
             step, try using "e_3_3".
           </p>
           <p>Alternatively, try using a random seed.</p>
