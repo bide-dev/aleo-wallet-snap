@@ -1,19 +1,23 @@
-export const SNAP_ID = __SNAP_ID__;
+export const SNAP_ID = __SNAP_ID__; // Injected by webpack.DefinePlugin
 
-export async function connectSnap() {
+const request = (method, params) => {
+  if (!window.ethereum || !window.ethereum.isMetaMask) {
+    throw new Error("MetaMask is not installed");
+  }
+
+  return window.ethereum.request({ method, params });
+}
+
+export const requestSnap = async (method, params) => {
+  return request("wallet_invokeSnap", [SNAP_ID, { method, params }]);
+}
+
+export const connect = async () => {
   try {
-    const result = await ethereum.request({
-      method: "wallet_enable",
-      params: [
-        {
-          wallet_snap: { [SNAP_ID]: {} },
-        },
-      ],
-    });
+    const result = await request("wallet_enable", [{ wallet_snap: { [SNAP_ID]: {} } }]);
     console.log({ result });
   } catch (error) {
-    // The `wallet_enable` call will throw if the requested permissions are
-    // rejected.
+    // The `wallet_enable` call will throw if the requested permissions are rejected.
     if (error.code === 4001) {
       console.error("The user rejected the request.");
       alert("The user rejected the request.");
@@ -24,18 +28,28 @@ export async function connectSnap() {
   }
 }
 
-export async function getAccount(seed) {
+export const isEnabled = async () => {
   try {
-    const account = await ethereum.request({
-      method: "wallet_invokeSnap",
-      params: [
-        SNAP_ID,
-        {
-          method: "aleo_get_account",
-          params: [seed],
-        },
-      ],
-    });
+    return await requestSnap("aleo_is_enabled");
+  } catch {
+    return false;
+  }
+};
+
+export const getAccountFromSeed = async (seed) => {
+  try {
+    const account = await requestSnap("aleo_get_account_from_seed", [seed]);
+    console.log({ account });
+    return account;
+  } catch (error) {
+    console.error(error);
+    alert("Error: " + error.message || error);
+  }
+}
+
+export const getRandomAccount = async () => {
+  try {
+    const account = await requestSnap("aleo_get_random_account");
     console.log({ account });
     return account;
   } catch (error) {

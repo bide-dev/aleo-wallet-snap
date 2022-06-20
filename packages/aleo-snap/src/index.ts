@@ -1,18 +1,19 @@
 import { ethErrors } from 'eth-rpc-errors';
-import { BIP44CoinTypeNode, getBIP44AddressKeyDeriver, JsonBIP44CoinTypeNode } from '@metamask/key-tree';
-import { SHA3 } from 'sha3';
+import { BIP44CoinTypeNode, JsonBIP44CoinTypeNode } from '@metamask/key-tree';
 import * as aleoSdk from 'aleo-wasm-bundler';
-import { InitOutput, Account } from 'aleo-wasm-bundler';
+import { InitOutput } from 'aleo-wasm-bundler';
 
 import { PROGRAM_WASM_HEX } from './wasm';
+import * as handlers from './handlers';
 
 // kudos: https://stackoverflow.com/a/71083193
-function arrayBufferFromHex(hexString: string) {
+const arrayBufferFromHex = (hexString: string) => {
   const strBytes = hexString
     .replace(/^0x/i, '')
     .match(/../g) ?? [];
   return new Uint8Array(strBytes.map((byte: string) => parseInt(byte, 16))).buffer;
 }
+
 
 let wasm: InitOutput;
 let bipEthNode: BIP44CoinTypeNode | JsonBIP44CoinTypeNode;
@@ -28,42 +29,30 @@ const initializeWasm = async () => {
   }
 };
 
-function makeAccount(seed: any) {
+type RequestObject = { method: any; params: any[]; };
 
-  const deriveEthAddress = getBIP44AddressKeyDeriver(bipEthNode);
-  const addressKey0 = deriveEthAddress(0);
-  const seedWithBip44 = `${seed}${addressKey0.toString('hex')}`;
-
-  const hash = new SHA3(256);
-  hash.update(seedWithBip44);
-  const buffer = hash.digest();
-  const account = Account.from_seed(buffer);
-  const result = {
-    address: account.to_address(),
-    view_key: account.to_view_key(),
-  };
-  console.log(`makeAccount: ${JSON.stringify(result)}`);
-  return result;
-}
-
-wallet.registerRpcMessageHandler(async (originString: any, requestObject: { method: any; params: any[]; }) => {
+wallet.registerRpcMessageHandler(async (originString: any, { method, params }: RequestObject) => {
   if (!wasm) {
     await initializeWasm();
   }
 
-  switch (requestObject.method) {
-    case 'aleo_get_account':
-      console.log(`aleo_get_account: ${JSON.stringify(requestObject.params)}`);
-      if (!requestObject.params[0]) {
-        return ethErrors.rpc.invalidParams('Missing parameter: seed');
-      }
+  if (!bipEthNode) {
+    bipEthNode = await wallet.request({
+      method: 'snap_getBip44Entropy_60', // Ethereum BIP44 node 
+    });
+  }
 
-      bipEthNode = await wallet.request({
-        method: 'snap_getBip44Entropy_60',
-      });
+  switch (method) {
+    case 'aleo_is_enabled':
+      return handlers.isEnabled();
 
-      return makeAccount(requestObject.params[0]);
+    case 'aleo_get_account_from_seed':
+      return handlers.getAccountFromSeed(bipEthNode, params);
+
+    case 'aleo_get_random_account':
+      return handlers.getRandomAccount();
+
     default:
-      throw ethErrors.rpc.methodNotFound({ data: { request: requestObject } });
+      throw ethErrors.rpc.methodNotFound({ data: { request: { method, params } } });
   }
 });
