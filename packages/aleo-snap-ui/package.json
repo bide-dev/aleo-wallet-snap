@@ -2,7 +2,7 @@
   "name": "aleo-snap-ui",
   "version": "0.1.0",
   "private": true,
-  "license": "GPL-3.0-only",
+  "license": "GPL-3.0",
   "dependencies": {
     "@aleohq/ui": "^0.0.9",
     "@ant-design/icons": "^4.4.0",
