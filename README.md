@@ -2,6 +2,11 @@
 
 ![Project logo](logo.png)
 
+Other related repositories
+
+- [piotr-roslaniec/aleo](https://github.com/piotr-roslaniec/aleo) - Aleo SDK fork
+- [piotr-roslaniec/snarkVM](https://github.com/piotr-roslaniec/snarkVM) - snarkVM fork - Used in `piotr-roslaniec/aleo`
+
 ## How it works
 
 ![Snap diagram](snap-diagram.png)
