@@ -12,7 +12,7 @@
   },
   "license": "GPL-3.0",
   "dependencies": {
-    "aleo-sdk": "^0.3.2-beta.1"
+    "aleo-sdk": "0.3.2-beta.4"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^22.0.0",

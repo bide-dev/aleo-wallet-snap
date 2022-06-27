@@ -7,6 +7,7 @@ import { Button, Card, Col, Row } from "antd";
 import { NewVanityAccount } from "./NewVanityAccount";
 import { NewAccount } from "./NewAccount";
 import { RecoverAccount } from "./RecoverAccount";
+import { SignMessage } from "./SignMessage";
 import * as snap from "./snap";
 
 const { Header, Content, Footer } = Layout;
@@ -48,6 +49,9 @@ function App() {
           <Menu.Item key="2" onClick={() => setMenuIndex(2)}>
             Recover Account
           </Menu.Item>
+          <Menu.Item key="3" onClick={() => setMenuIndex(3)}>
+            Sign Message
+          </Menu.Item>
         </Menu>
       </Header>
       <Content style={{ padding: "50px 50px" }}>
@@ -76,6 +80,7 @@ function App() {
         {snapConnected && menuIndex === 0 && <NewAccount />}
         {snapConnected && menuIndex === 1 && <NewVanityAccount />}
         {snapConnected && menuIndex === 2 && <RecoverAccount />}
+        {snapConnected && menuIndex === 3 && <SignMessage />}
       </Content>
       <Footer style={{ textAlign: "center" }}>
         Visit{" "}
