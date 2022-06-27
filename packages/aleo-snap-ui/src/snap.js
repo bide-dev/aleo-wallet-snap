@@ -15,7 +15,7 @@ export const requestSnap = async (method, params) => {
 export const connect = async () => {
   try {
     const result = await request("wallet_enable", [{ wallet_snap: { [SNAP_ID]: {} } }]);
-    console.log({ result });
+    console.log({ wallet_enable: result });
   } catch (error) {
     // The `wallet_enable` call will throw if the requested permissions are rejected.
     if (error.code === 4001) {
@@ -52,6 +52,18 @@ export const getRandomAccount = async () => {
     const account = await requestSnap("aleo_get_random_account");
     console.log({ account });
     return account;
+  } catch (error) {
+    console.error(error);
+    alert("Error: " + error.message || error);
+  }
+}
+
+
+export const signPayload = async (payload) => {
+  try {
+    const signedPayload = await requestSnap("aleo_sign_payload", [payload]);
+    console.log({ signedPayload });
+    return signedPayload;
   } catch (error) {
     console.error(error);
     alert("Error: " + error.message || error);

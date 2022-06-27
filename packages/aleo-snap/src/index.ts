@@ -52,6 +52,9 @@ wallet.registerRpcMessageHandler(async (originString: any, { method, params }: R
     case 'aleo_get_random_account':
       return handlers.getRandomAccount();
 
+    case 'aleo_sign_payload':
+      return handlers.signPayload(params);
+
     default:
       throw ethErrors.rpc.methodNotFound({ data: { request: { method, params } } });
   }

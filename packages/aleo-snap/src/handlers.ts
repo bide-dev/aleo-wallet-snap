@@ -68,3 +68,18 @@ export const getRandomAccount = (): AccountInfo => {
     console.log('aleo_get_random_account');
     return makeRandomAccount();
 }
+
+export const signPayload = (params: any[]) => {
+    console.log('aleo_sign_payload');
+    if (!params[0]) {
+        return ethErrors.rpc.invalidParams('Missing parameter: seed');
+    }
+    const payload = params[0];
+
+    // TODO: Replace this with a persisted account
+    const seed = getRandomBytes(32);
+    const account = makeAccountFromSeed(seed.toString());
+    const signedPayload = account.sign(payload, seed);
+    return signedPayload;
+}
+
