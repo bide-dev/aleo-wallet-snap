@@ -16,11 +16,14 @@ function App() {
   const [snapConnected, setSnapConnected] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  useEffect(async () => {
-    const isEnabled = await snap.isEnabled();
-    setLoading(isEnabled);
-    setSnapConnected(isEnabled);
-  }, [snapConnected]);
+  useEffect(() => {
+    const connectSnap = async () => {
+      const isEnabled = await snap.isEnabled();
+      setLoading(isEnabled);
+      setSnapConnected(isEnabled);
+    }
+    connectSnap().catch(console.error);
+  }, []);
 
   const doConnectSnap = async () => {
     setLoading(true);

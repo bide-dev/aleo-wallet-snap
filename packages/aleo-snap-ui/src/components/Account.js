@@ -5,7 +5,6 @@ import { CopyButton } from "./CopyButton";
 
 export const Account = ({ account, onDeleteAccount }) => {
     const { viewKey, address } = account;
-    console.log({ account });
 
     const layout = { labelCol: { span: 2 }, wrapperCol: { span: 21 } };
     return (

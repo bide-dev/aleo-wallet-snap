@@ -84,9 +84,9 @@ export const getAccounts = async () => {
   }
 }
 
-export const signPayload = async (payload) => {
+export const signPayload = async (address, payload) => {
   try {
-    return await requestSnap("aleo_sign_payload", [payload]);
+    return await requestSnap("aleo_sign_payload", [address, payload]);
   } catch (error) {
     console.error(error);
     alert("Error: " + error.message || error);

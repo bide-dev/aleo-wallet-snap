@@ -4,7 +4,6 @@ import { Button, Col, Divider, Form, Row } from "antd";
 import { Account } from "./Account";
 
 export const AccountList = ({ accounts, onDeleteAccount, onDeleteAllAccounts }) => {
-    console.log({ accounts });
 
     const accountsToRender = accounts.map(
         acc => <Account

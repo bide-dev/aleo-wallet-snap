@@ -57,7 +57,6 @@ export class SnapState {
         if (state === null) {
             return EMPTY_APP_STATE;
         }
-        console.log({ state });
         const oldState: AppState = await passworder.decrypt(entropy.key, state.passwords);
         return oldState;
     }

@@ -5,6 +5,7 @@ import { Account } from 'aleo-wasm-bundler';
 import { getRandomBytes, RNG_SEED_SIZE } from './utils';
 import { SnapState } from './state';
 import { Bip44Node } from './types';
+import { getMessageFromCode } from 'eth-rpc-errors';
 
 export interface PublicAccountInfo {
     address: string;
@@ -15,10 +16,14 @@ export interface PrivateAccountInfo extends PublicAccountInfo {
     privateKey: string;
 }
 
-const makeAccountFromSeed = (seed: string): Account => {
+const sha256 = (msg: string): Buffer => {
     const hash = new SHA3(256);
-    hash.update(seed);
-    return Account.from_seed(hash.digest());
+    hash.update(msg);
+    return hash.digest();
+}
+
+const makeAccountFromSeed = (seed: string): Account => {
+    return Account.from_seed(sha256(seed));
 }
 
 export const makeAccount = (entropy: Bip44Node, seed: any): PublicAccountInfo => {
@@ -85,11 +90,13 @@ export const deleteAllAccounts = async (state: SnapState): Promise<void> => {
     await deleteAccounts(state, addresses);
 }
 
-export const signWithAccount = async (state: SnapState, address: string, message: string): Promise<Uint8Array | null> => {
+export const signWithAccount = (state: SnapState, address: string, message: string): Uint8Array | null => {
     const account = state.getState().accounts.find(account => account.address === address);
     if (!account) {
         return null;
     }
     const accountInstance = Account.from_private_key(account.privateKey);
-    return accountInstance.sign(message);
+    const hashedMessage = sha256(message).toString('hex');
+    const seed = getRandomBytes(RNG_SEED_SIZE);
+    return accountInstance.sign(hashedMessage, seed);
 }

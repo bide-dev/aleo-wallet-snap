@@ -21,28 +21,27 @@ export const NewAccount = () => {
     setLoading(false);
   };
 
-  const readAccounts = async () => {
-    setAccounts([]);
-    setLoading(true);
-    setTimeout(() => { }, 100);
-    const accounts = await snap.getAccounts();
-    if (!accounts) {
-      alert("Failed to read accounts");
-      setLoading(false);
-      return;
-    }
-    setAccounts(accounts);
-    setLoading(false);
-  };
-
   useEffect(() => {
+    const readAccounts = async () => {
+      setAccounts([]);
+      setLoading(true);
+      setTimeout(() => { }, 100);
+      const accounts = await snap.getAccounts();
+      if (!accounts) {
+        alert("Failed to read accounts");
+        setLoading(false);
+        return;
+      }
+      setAccounts(accounts);
+      setLoading(false);
+    };
+
     readAccounts().catch(console.error);
   }, []);
 
   const onDeleteAllAccounts = async () => {
     setLoading(true);
     await snap.deleteAllAccounts();
-    // await readAccounts();
     setLoading(false);
     setAccounts([]);
   }
@@ -50,12 +49,9 @@ export const NewAccount = () => {
   const onDeleteAccount = async (address) => {
     setLoading(true);
     await snap.deleteAccount(address);
-    // await readAccounts();
     setLoading(false);
     setAccounts(accounts.filter(acc => acc.address !== address));
   }
-
-  console.log({ accounts });
 
   const layout = { labelCol: { span: 3 }, wrapperCol: { span: 21 } };
 
