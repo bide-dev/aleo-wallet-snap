@@ -1,10 +1,11 @@
-import { ethErrors } from 'eth-rpc-errors';
-import { BIP44CoinTypeNode, JsonBIP44CoinTypeNode } from '@metamask/key-tree';
 import * as aleoSdk from 'aleo-wasm-bundler';
 import { InitOutput } from 'aleo-wasm-bundler';
+import { ethErrors } from 'eth-rpc-errors';
 
 import { PROGRAM_WASM_HEX } from './wasm';
 import * as handlers from './handlers';
+import { Bip44Node } from './types';
+import { SnapState } from './state';
 
 // kudos: https://stackoverflow.com/a/71083193
 const arrayBufferFromHex = (hexString: string) => {
@@ -16,7 +17,8 @@ const arrayBufferFromHex = (hexString: string) => {
 
 
 let wasm: InitOutput;
-let bipEthNode: BIP44CoinTypeNode | JsonBIP44CoinTypeNode;
+let entropy: Bip44Node;
+let state: SnapState;
 
 const initializeWasm = async () => {
   try {
@@ -36,10 +38,14 @@ wallet.registerRpcMessageHandler(async (originString: any, { method, params }: R
     await initializeWasm();
   }
 
-  if (!bipEthNode) {
-    bipEthNode = await wallet.request({
+  if (!entropy) {
+    entropy = await wallet.request({
       method: 'snap_getBip44Entropy_60', // Ethereum BIP44 node 
     });
+  }
+
+  if (!state) {
+    state = await SnapState.fromPersisted(entropy);
   }
 
   switch (method) {
@@ -47,13 +53,22 @@ wallet.registerRpcMessageHandler(async (originString: any, { method, params }: R
       return handlers.isEnabled();
 
     case 'aleo_get_account_from_seed':
-      return handlers.getAccountFromSeed(bipEthNode, params);
+      return handlers.getAccountFromSeed(entropy, params);
 
     case 'aleo_get_random_account':
-      return handlers.getRandomAccount();
+      return handlers.getRandomAccount(state, entropy);    
+      
+    case 'aleo_get_accounts':
+      return handlers.getAccounts(state);
+
+    case 'aleo_delete_account':
+      return handlers.deleteAccount(state, params);
+
+    case 'aleo_delete_all_accounts':
+      return handlers.deleteAllAccounts(state);
 
     case 'aleo_sign_payload':
-      return handlers.signPayload(params);
+      return handlers.signPayload(state, params);
 
     default:
       throw ethErrors.rpc.methodNotFound({ data: { request: { method, params } } });

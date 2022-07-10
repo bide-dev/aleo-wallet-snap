@@ -1,6 +1,6 @@
 {
   "name": "aleo-snap",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "Aleo Wallet implemented with MetaMask Snap",
   "repository": {
     "type": "git",
@@ -28,8 +28,10 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@metamask/browser-passworder": "^3.0.0",
     "@metamask/key-tree": "^3.0.1",
     "aleo-wasm-bundler": "workspace:*",
+    "async-mutex": "^0.3.2",
     "eth-rpc-errors": "^4.0.3",
     "sha3": "^2.1.4"
   },

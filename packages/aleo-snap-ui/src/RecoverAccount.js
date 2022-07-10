@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Button, Card, Col, Divider, Form, Input, Row } from "antd";
 
-import { CopyButton } from "./CopyButton";
+import { CopyButton } from "./components/CopyButton";
 import { getAccountFromSeed } from "./snap";
 
 const layout = { labelCol: { span: 3 }, wrapperCol: { span: 21 } };
