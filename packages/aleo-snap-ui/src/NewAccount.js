@@ -1,39 +1,62 @@
-import React, { useState } from "react";
-import { Button, Card, Col, Divider, Form, Input, Row } from "antd";
+import React, { useState, useEffect } from "react";
+import { Button, Card, Col, Form, Row, Divider } from "antd";
 
-import { CopyButton } from "./CopyButton";
 import * as snap from "./snap";
+import { AccountList } from "./components/AccountList";
 
 export const NewAccount = () => {
-  const [account, setAccount] = useState(null);
+  const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const clear = () => setAccount(null);
-
   const createAccount = async () => {
-    clear();
     setLoading(true);
     setTimeout(() => { }, 100);
-    const result = await snap.getRandomAccount();
-    if (!result) {
+    const account = await snap.getRandomAccount();
+    if (!account) {
       alert("Failed to create a new account");
       setLoading(false);
       return;
     }
-    setAccount(result);
+    setAccounts([...accounts, account]);
     setLoading(false);
   };
 
-  const privateKey = () =>
-    account !== null ? "Stays safe inside MetaMask!" : "";
-  const viewKey = () => (account !== null ? account.viewKey : "");
-  const address = () => (account !== null ? account.address : "");
+  useEffect(() => {
+    const readAccounts = async () => {
+      setAccounts([]);
+      setLoading(true);
+      setTimeout(() => { }, 100);
+      const accounts = await snap.getAccounts();
+      if (!accounts) {
+        alert("Failed to read accounts");
+        setLoading(false);
+        return;
+      }
+      setAccounts(accounts);
+      setLoading(false);
+    };
+
+    readAccounts().catch(console.error);
+  }, []);
+
+  const onDeleteAllAccounts = async () => {
+    setLoading(true);
+    await snap.deleteAllAccounts();
+    setLoading(false);
+    setAccounts([]);
+  }
+
+  const onDeleteAccount = async (address) => {
+    setLoading(true);
+    await snap.deleteAccount(address);
+    setLoading(false);
+    setAccounts(accounts.filter(acc => acc.address !== address));
+  }
 
   const layout = { labelCol: { span: 3 }, wrapperCol: { span: 21 } };
 
   return (
     <>
-      <Divider />
       <Card
         title="Create a new account"
         style={{ width: "100%", borderRadius: "20px" }}
@@ -54,38 +77,12 @@ export const NewAccount = () => {
             </Col>
           </Row>
         </Form>
-        {account && (
-          <Form {...layout}>
-            <Divider />
-            <Form.Item label="Private Key" colon={false}>
-              <Input
-                size="large"
-                placeholder="Private Key"
-                value={privateKey()}
-                addonAfter={<CopyButton data={privateKey()} />}
-                disabled
-              />
-            </Form.Item>
-            <Form.Item label="View Key" colon={false}>
-              <Input
-                size="large"
-                placeholder="View Key"
-                value={viewKey()}
-                addonAfter={<CopyButton data={viewKey()} />}
-                disabled
-              />
-            </Form.Item>
-            <Form.Item label="Address" colon={false}>
-              <Input
-                size="large"
-                placeholder="Address"
-                value={address()}
-                addonAfter={<CopyButton data={address()} />}
-                disabled
-              />
-            </Form.Item>
-          </Form>
-        )}
+        <Divider />
+        <AccountList
+          accounts={accounts}
+          onDeleteAccount={onDeleteAccount}
+          onDeleteAllAccounts={onDeleteAllAccounts}
+        />
       </Card>
     </>
   );

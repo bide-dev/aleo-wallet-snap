@@ -1,46 +1,78 @@
-import React, { useState } from "react";
-import { Button, Card, Col, Divider, Form, Input, Row } from "antd";
+import React, { useState, useEffect } from "react";
+import { Button, Card, Col, Divider, Form, Input, Row, Select } from "antd";
 
-import { CopyButton } from "./CopyButton";
+import { CopyButton } from "./components/CopyButton";
 import * as snap from "./snap";
 import { bufferToHex } from "./utils";
 
 const layout = { labelCol: { span: 3 }, wrapperCol: { span: 21 } };
 
 export const SignMessage = () => {
+  const [addresses, setAddresses] = useState([]);
+  const [selectedAddress, setSelectedAddress] = useState("");
   const [signedMessage, setSignedMessage] = useState("");
   const [message, setMessage] = useState("");
-  const [loadingSignMessage, setLoadingSignMessage] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const signMessage = async () => {
-    setSignedMessage(null);
-    setLoadingSignMessage(true);
+    setSignedMessage("");
+    setLoading(true);
     setTimeout(() => { }, 100);
-    // TODO: Why aren't we getting ArrayBuffer here?
-    const signed = await snap.signPayload(message);
+    const signed = await snap.signPayload(selectedAddress, message);
     if (!signed) {
       // TODO: use setError
       alert("Failed to sign a message");
-      setLoadingSignMessage(false);
+      setLoading(false);
       return;
     }
-
     setSignedMessage(signed);
-    setLoadingSignMessage(false);
+    setLoading(false);
   };
+
+  useEffect(() => {
+    const readAccounts = async () => {
+      setAddresses([]);
+      setLoading(true);
+      setTimeout(() => { }, 100);
+      const accounts = await snap.getAccounts();
+      if (!accounts) {
+        alert("Failed to read accounts");
+        setLoading(false);
+        return;
+      }
+      setAddresses(accounts.map(acc => acc.address));
+      setLoading(false);
+    };
+
+    readAccounts().catch(console.error);
+  }, []);
 
   const signedMessageHex = () => bufferToHex(Object.values(signedMessage));
 
+  const { Option } = Select;
+  const selectAddressOptions = addresses.map(address => (
+    <Option value={address} key={address}>{address}</Option>
+  ));
+
   return (
     <>
-      <Divider />
       <Card
         title="Sign a Message"
         style={{ width: "100%", borderRadius: "20px" }}
         bordered={false}
       >
         <Form {...layout}>
-          <p>Currently, this message is signed using a random account</p>
+          {!addresses.length && (<p>Please create an account first</p>)}
+          {addresses && (
+            <Select
+              loading={loading}
+              placeholder="Please select an account"
+              style={{ width: 360 }}
+              onChange={setSelectedAddress}>
+              {selectAddressOptions}
+            </Select>
+          )}
+          <Divider />
           <Form.Item colon={false}>
             <Input
               name="Message"
@@ -58,7 +90,7 @@ export const SignMessage = () => {
                 onClick={signMessage}
                 shape="round"
                 size="large"
-                loading={!!loadingSignMessage}
+                loading={!!loading}
               >
                 Sign
               </Button>
@@ -68,10 +100,11 @@ export const SignMessage = () => {
         {signedMessage && (
           <Form {...layout}>
             <Divider />
-            <Form.Item label="Signed message (hex)" colon={false}>
+            <Form.Item label="Signed (hex)" colon={false}>
               <Input
                 size="large"
                 placeholder="Signed Message"
+                style={{ width: 360 }}
                 value={signedMessageHex()}
                 addonAfter={<CopyButton data={signedMessageHex()} />}
                 disabled

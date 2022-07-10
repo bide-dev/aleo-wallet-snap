@@ -1,21 +1,24 @@
 export const SNAP_ID = __SNAP_ID__; // Injected by webpack.DefinePlugin
 
-const request = (method, params) => {
+const request = async (method, params) => {
   if (!window.ethereum || !window.ethereum.isMetaMask) {
     throw new Error("MetaMask is not installed");
   }
 
-  return window.ethereum.request({ method, params });
+  const result = await window.ethereum.request({ method, params });
+  console.log([method, result])
+  return result;
 }
 
 export const requestSnap = async (method, params) => {
-  return request("wallet_invokeSnap", [SNAP_ID, { method, params }]);
+  const result = await request("wallet_invokeSnap", [SNAP_ID, { method, params }]);
+  console.log([method, result])
+  return result;
 }
 
 export const connect = async () => {
   try {
-    const result = await request("wallet_enable", [{ wallet_snap: { [SNAP_ID]: {} } }]);
-    console.log({ wallet_enable: result });
+    await request("wallet_enable", [{ wallet_snap: { [SNAP_ID]: {} } }]);
   } catch (error) {
     // The `wallet_enable` call will throw if the requested permissions are rejected.
     if (error.code === 4001) {
@@ -38,9 +41,7 @@ export const isEnabled = async () => {
 
 export const getAccountFromSeed = async (seed) => {
   try {
-    const account = await requestSnap("aleo_get_account_from_seed", [seed]);
-    console.log({ account });
-    return account;
+    return await requestSnap("aleo_get_account_from_seed", [seed]);
   } catch (error) {
     console.error(error);
     alert("Error: " + error.message || error);
@@ -49,21 +50,43 @@ export const getAccountFromSeed = async (seed) => {
 
 export const getRandomAccount = async () => {
   try {
-    const account = await requestSnap("aleo_get_random_account");
-    console.log({ account });
-    return account;
+    return await requestSnap("aleo_get_random_account");
   } catch (error) {
     console.error(error);
     alert("Error: " + error.message || error);
   }
 }
 
-
-export const signPayload = async (payload) => {
+export const deleteAccount = async (address) => {
   try {
-    const signedPayload = await requestSnap("aleo_sign_payload", [payload]);
-    console.log({ signedPayload });
-    return signedPayload;
+    await requestSnap("aleo_delete_account", [address]);
+  } catch (error) {
+    console.error(error);
+    alert("Error: " + error.message || error);
+  }
+}
+
+export const deleteAllAccounts = async () => {
+  try {
+    await requestSnap("aleo_delete_all_accounts");
+  } catch (error) {
+    console.error(error);
+    alert("Error: " + error.message || error);
+  }
+}
+
+export const getAccounts = async () => {
+  try {
+    return await requestSnap("aleo_get_accounts");
+  } catch (error) {
+    console.error(error);
+    alert("Error: " + error.message || error);
+  }
+}
+
+export const signPayload = async (address, payload) => {
+  try {
+    return await requestSnap("aleo_sign_payload", [address, payload]);
   } catch (error) {
     console.error(error);
     alert("Error: " + error.message || error);
