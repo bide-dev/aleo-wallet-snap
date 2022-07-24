@@ -1,20 +1,13 @@
 import * as aleoSdk from 'aleo-wasm-bundler';
 import { InitOutput } from 'aleo-wasm-bundler';
+import { RpcMethod, RpcParams } from 'aleo-snap-adapter';
 import { ethErrors } from 'eth-rpc-errors';
 
 import { PROGRAM_WASM_HEX } from './wasm';
 import * as handlers from './handlers';
 import { Bip44Node } from './types';
 import { SnapState } from './state';
-
-// kudos: https://stackoverflow.com/a/71083193
-const arrayBufferFromHex = (hexString: string) => {
-  const strBytes = hexString
-    .replace(/^0x/i, '')
-    .match(/../g) ?? [];
-  return new Uint8Array(strBytes.map((byte: string) => parseInt(byte, 16))).buffer;
-}
-
+import { arrayBufferFromHex } from './utils';
 
 let wasm: InitOutput;
 let entropy: Bip44Node;
@@ -31,9 +24,9 @@ const initializeWasm = async () => {
   }
 };
 
-type RequestObject = { method: any; params: any[]; };
+type RequestObject = { method: RpcMethod; params: RpcParams };
 
-wallet.registerRpcMessageHandler(async (originString: any, { method, params }: RequestObject) => {
+wallet.registerRpcMessageHandler(async (originString: string, { method, params }: RequestObject) => {
   if (!wasm) {
     await initializeWasm();
   }
@@ -49,26 +42,26 @@ wallet.registerRpcMessageHandler(async (originString: any, { method, params }: R
   }
 
   switch (method) {
-    case 'aleo_is_enabled':
+    case "isEnabled":
       return handlers.isEnabled();
 
-    case 'aleo_get_account_from_seed':
+    case "getAccountFromSeed":
       return handlers.getAccountFromSeed(entropy, params);
 
-    case 'aleo_get_random_account':
-      return handlers.getRandomAccount(state, entropy);    
-      
-    case 'aleo_get_accounts':
+    case "getRandomAccount":
+      return handlers.getRandomAccount(state, entropy);
+
+    case "getAccounts":
       return handlers.getAccounts(state);
 
-    case 'aleo_delete_account':
+    case "deleteAccount":
       return handlers.deleteAccount(state, params);
 
-    case 'aleo_delete_all_accounts':
+    case "deleteAllAccounts":
       return handlers.deleteAllAccounts(state);
 
-    case 'aleo_sign_payload':
-      return handlers.signPayload(state, params);
+    case "signString":
+      return handlers.signString(state, params);
 
     default:
       throw ethErrors.rpc.methodNotFound({ data: { request: { method, params } } });

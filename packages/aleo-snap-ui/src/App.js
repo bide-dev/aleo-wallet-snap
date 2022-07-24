@@ -1,13 +1,13 @@
 import "./App.css";
-import React, { useEffect, useState } from "react";
+import * as snap from "aleo-snap-adapter";
 import { Layout, Menu } from "antd";
 import { Button, Card, Col, Row } from "antd";
+import React, { useEffect, useState } from "react";
 
 import { NewVanityAccount } from "./NewVanityAccount";
 import { NewAccount } from "./NewAccount";
 import { RecoverAccount } from "./RecoverAccount";
 import { SignMessage } from "./SignMessage";
-import * as snap from "./snap";
 
 const { Header, Content, Footer } = Layout;
 

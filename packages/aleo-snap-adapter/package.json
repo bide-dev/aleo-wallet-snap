@@ -1,0 +1,45 @@
+{
+    "name": "aleo-snap-adapter",
+    "version": "0.1.0",
+    "description": "Access Aleo Snap through a typed API",
+    "author": "Piotr Roslaniec <p.roslaniec@gmail.com>",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/AleoHQ/aleo-wallet-snap"
+    },
+    "main": "build/index.js",
+    "types": "build/index.d.ts",
+    "files": [
+        "build/"
+    ],
+    "license": "GPL-3.0",
+    "scripts": {
+        "build": "tsc && yarn post-build",
+        "post-build": "ts-node scripts/post-build.ts",
+        "build-dev": "NODE_ENV=development yarn build",
+        "dev": "yarn build-dev # nodemon --watch src/ --ext ts --exec 'yarn build-dev'",
+        "doc": "yarn doc:html && open-cli build/docs/index.html",
+        "doc:html": "typedoc src/ --out build/docs",
+        "doc:publish": "gh-pages -m \"[ci skip] Updates\" -d build/docs",
+        "clean": "rm -r build/",
+        "typecheck": "tsc --noEmit",
+        "lint": "yarn lint:eslint && yarn lint:misc --check",
+        "lint:eslint": "eslint . --cache --ext js,ts",
+        "lint:fix": "yarn lint:eslint --fix && yarn lint:misc --write"
+    },
+    "dependencies": {
+        "replace-in-file": "6.3.5"
+    },
+    "devDependencies": {
+        "@types/node": "^18.0.6",
+        "eslint": "8.19.0",
+        "gh-pages": "^4.0.0",
+        "nodemon": "2.0.19",
+        "open-cli": "^7.0.1",
+        "prettier": "2.7.1",
+        "ts-node": "10.8.2",
+        "tsc-alias": "1.6.11",
+        "typedoc": "^0.23.8",
+        "typescript": "4.7.4"
+    }
+}

@@ -1,7 +1,8 @@
+import { PublicAccountInfo, RpcParams } from 'aleo-snap-adapter';
 import { EthereumRpcError, ethErrors } from 'eth-rpc-errors';
+
 import {
     makeAccount,
-    PublicAccountInfo,
     makeRandomAccount,
     deleteAllAccounts as deleteAllAccountsFromState,
     signWithAccount,
@@ -12,7 +13,7 @@ import { Bip44Node } from './types';
 
 type Error = EthereumRpcError<unknown>
 
-export const getAccountFromSeed = (entropy: Bip44Node, params: any[]) => {
+export const getAccountFromSeed = (entropy: Bip44Node, params: RpcParams) => {
     console.log(`aleo_get_account_from_seed: ${JSON.stringify(params)}`);
     if (!params[0]) {
         return ethErrors.rpc.invalidParams('Missing parameter: seed');
@@ -25,7 +26,7 @@ export const getRandomAccount = async (state: SnapState, entropy: Bip44Node): Pr
     return await makeRandomAccount(state, entropy);
 }
 
-export const signPayload = async (state: SnapState, params: any[]) => {
+export const signString = async (state: SnapState, params: RpcParams) => {
     console.log(`aleo_sign_payload: ${JSON.stringify(params)}`);
     if (!params[0]) {
         return ethErrors.rpc.invalidParams('Missing parameter: address');
@@ -62,7 +63,7 @@ export const deleteAllAccounts = async (state: SnapState): Promise<boolean> => {
     return true;
 }
 
-export const deleteAccount = async (state: SnapState, params: any[]): Promise<boolean | Error> => {
+export const deleteAccount = async (state: SnapState, params: RpcParams): Promise<boolean | Error> => {
     console.log(`aleo_delete_account: ${JSON.stringify(params)}`);
     if (!params[0]) {
         return Promise.resolve(ethErrors.rpc.invalidParams('Missing parameter: address'));

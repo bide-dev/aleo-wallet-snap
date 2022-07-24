@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Button, Card, Col, Divider, Form, Input, Row } from "antd";
 
 import { CopyButton } from "./components/CopyButton";
-import { getAccountFromSeed } from "./snap";
+import { getAccountFromSeed } from "aleo-snap-adapter";
 
 const layout = { labelCol: { span: 3 }, wrapperCol: { span: 21 } };
 

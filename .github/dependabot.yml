@@ -5,7 +5,15 @@ updates:
     schedule:
       interval: "daily"
   - package-ecosystem: "npm"
-    directory: "aleo-snap"
+    directory: "aleo-snap-wallet"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "npm"
+    directory: "aleo-snap-adapter"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "npm"
+    directory: "aleo-snap-ui"
     schedule:
       interval: "daily"
   - package-ecosystem: "npm"

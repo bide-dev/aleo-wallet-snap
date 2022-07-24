@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
 import { Button, Card, Col, Form, Row, Divider } from "antd";
+import * as snap from "aleo-snap-adapter";
+import React, { useState, useEffect } from "react";
 
-import * as snap from "./snap";
 import { AccountList } from "./components/AccountList";
 
 export const NewAccount = () => {
