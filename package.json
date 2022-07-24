@@ -5,14 +5,14 @@
         "packages/*"
     ],
     "scripts": {
-        "build": "yarn workspaces foreach -vitp run build && cp packages/aleo-snap/snap.manifest.json packages/aleo-snap-ui/dist/",
+        "build": "yarn workspaces foreach -vitp run build && cp packages/aleo-wallet-snap/snap.manifest.json packages/aleo-snap-ui/dist/",
         "dev": "yarn workspaces foreach -vitp run dev",
         "typecheck": "yarn workspaces foreach -vip run typecheck",
         "lint": "yarn workspaces foreach -vip run lint",
         "lint:errors": "yarn workspaces foreach -vip run lint -- --quiet",
         "lint:fix": "yarn workspaces foreach -vip run lint:fix",
         "bump": "yarn workspaces foreach -vit version",
-        "publish": "yarn workspace aleo-snap npm publish --tolerate-republish"
+        "publish": "yarn workspace aleo-wallet-snap npm publish --tolerate-republish"
     },
     "packageManager": "yarn@3.2.1"
 }

@@ -9,4 +9,11 @@ export const getRandomBytes = (byteCount: number): Int32Array => {
     return randomBytes;
 };
 
+// Reference: https://stackoverflow.com/a/71083193
+export const arrayBufferFromHex = (hexString: string) => {
+    const strBytes = hexString
+        .replace(/^0x/i, '')
+        .match(/../g) ?? [];
+    return new Uint8Array(strBytes.map((byte: string) => parseInt(byte, 16))).buffer;
+}
 

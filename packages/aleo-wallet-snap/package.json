@@ -1,10 +1,11 @@
 {
-  "name": "aleo-snap",
-  "version": "0.0.13",
+  "name": "aleo-wallet-snap",
+  "version": "0.1.0",
   "description": "Aleo Wallet implemented with MetaMask Snap",
+  "author": "Piotr Roslaniec <p.roslaniec@gmail.com>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/piotr-roslaniec/aleo-snap"
+    "url": "https://github.com/AleoHQ/aleo-wallet-snap"
   },
   "license": "GPL-3.0",
   "main": "src/index.js",
@@ -30,6 +31,7 @@
   "dependencies": {
     "@metamask/browser-passworder": "^3.0.0",
     "@metamask/key-tree": "^3.0.1",
+    "aleo-snap-adapter": "workspace:*",
     "aleo-wasm-bundler": "workspace:*",
     "async-mutex": "^0.3.2",
     "eth-rpc-errors": "^4.0.3",

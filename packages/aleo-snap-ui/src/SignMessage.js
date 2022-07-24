@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
 import { Button, Card, Col, Divider, Form, Input, Row, Select } from "antd";
+import * as snap from "aleo-snap-adapter";
+import React, { useState, useEffect } from "react";
 
 import { CopyButton } from "./components/CopyButton";
-import * as snap from "./snap";
 import { bufferToHex } from "./utils";
 
 const layout = { labelCol: { span: 3 }, wrapperCol: { span: 21 } };
@@ -18,7 +18,7 @@ export const SignMessage = () => {
     setSignedMessage("");
     setLoading(true);
     setTimeout(() => { }, 100);
-    const signed = await snap.signPayload(selectedAddress, message);
+    const signed = await snap.signString(selectedAddress, message);
     if (!signed) {
       // TODO: use setError
       alert("Failed to sign a message");

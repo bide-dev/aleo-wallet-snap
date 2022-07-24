@@ -1,4 +1,4 @@
-# `aleo-snap`
+# `aleo-wallet-snap`
 
 ## Installation
 

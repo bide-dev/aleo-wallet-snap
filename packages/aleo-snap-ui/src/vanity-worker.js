@@ -1,4 +1,4 @@
-const { getAccountFromSeed } = require("./snap");
+const { getAccountFromSeed } = require("aleo-snap-adapter");
 
 export const makeAccount = async (seed) => {
   const account = await getAccountFromSeed(seed);

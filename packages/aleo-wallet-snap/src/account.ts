@@ -1,16 +1,12 @@
 import { getBIP44AddressKeyDeriver } from '@metamask/key-tree';
 import { SHA3 } from 'sha3';
 import { Account } from 'aleo-wasm-bundler';
+import { PublicAccountInfo } from 'aleo-snap-adapter';
 
 import { getRandomBytes, RNG_SEED_SIZE } from './utils';
 import { SnapState } from './state';
 import { Bip44Node } from './types';
-import { getMessageFromCode } from 'eth-rpc-errors';
 
-export interface PublicAccountInfo {
-    address: string;
-    viewKey: string;
-}
 
 export interface PrivateAccountInfo extends PublicAccountInfo {
     privateKey: string;
