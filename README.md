@@ -7,6 +7,20 @@ Other related repositories
 - [piotr-roslaniec/aleo](https://github.com/piotr-roslaniec/aleo) - Aleo SDK fork
 - [piotr-roslaniec/snarkVM](https://github.com/piotr-roslaniec/snarkVM) - snarkVM fork - Used in `piotr-roslaniec/aleo`
 
+## Development
+
+Install dependencies for all packages
+
+```
+yarn install
+```
+
+Build packages in development mode with hot code reloading
+
+```
+yarn dev
+```
+
 ## How it works
 
 ![Snap diagram](snap-diagram.png)
