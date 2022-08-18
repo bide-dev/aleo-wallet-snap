@@ -7,7 +7,7 @@ import { Bip44Node } from './types';
 export class WalletState {
     constructor(
         public readonly accountIndex: number = 0,
-        // Accounts are stored as a map of address -> account
+        // address -> account
         public readonly accountMap: Record<string, PrivateAccount> = {}
     ) { }
 
@@ -82,8 +82,8 @@ export class SnapState {
         await request('update', encryptedState);
     }
 
-    public async deleteState(): Promise<void> {
-        request('clear');
+    public async deleteWallet(): Promise<void> {
+        await this.setState(new WalletState());
     }
 }
 

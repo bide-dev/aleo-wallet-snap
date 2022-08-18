@@ -37,16 +37,12 @@ export const isEnabled = () => true;
 
 export const getAccounts = (state: SnapState): PublicAccount[] => {
     console.log('aleo_get_accounts');
-    return state.wallet.accounts.map(account => ({
-        address: account.address,
-        viewKey: account.viewKey,
-        seed: account.seed,
-    }));
+    return state.wallet.accounts.map(({ address, viewKey }) => ({ address, viewKey, }))
 }
 
 export const deleteWallet = async (state: SnapState): Promise<boolean> => {
     console.log('aleo_delete_wallet');
-    await state.deleteState();
+    await state.deleteWallet();
     return true;
 }
 

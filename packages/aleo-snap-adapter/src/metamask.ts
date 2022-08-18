@@ -16,7 +16,7 @@ const request = async (method: string, params: any[]) => {
     }
 
     const result = await window.ethereum.request({ method, params });
-    console.log([method, result])
+    console.log([method, params, result])
     return result;
 }
 

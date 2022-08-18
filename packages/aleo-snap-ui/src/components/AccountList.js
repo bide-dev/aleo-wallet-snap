@@ -5,7 +5,7 @@ import { Account } from "./Account";
 
 export const AccountList = ({ accounts, onDeleteAccount, onDeleteWallet, onExportSeed }) => {
 
-    const accountsToRender = accounts.map(
+    const accountsToRender = (accounts ?? []).map(
         acc => <Account
             key={acc.address}
             account={acc}

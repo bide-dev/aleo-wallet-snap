@@ -40,7 +40,7 @@ export const deriveAccount = (state: SnapState, seedPrefix: string): { account: 
 }
 
 export const makeNewAccount = async (state: SnapState): Promise<PublicAccount> => {
-    const seedPhrase = `account_index_${wallet.accountIndex}`;
+    const seedPhrase = `account_index_${state.wallet.accountIndex}`;
     await state.setState(state.wallet.incrementAccountIndex());
 
     const { account, seed } = deriveAccount(state, seedPhrase);
@@ -67,14 +67,6 @@ export const deleteAccounts = async (state: SnapState, addresses: string[]): Pro
         state.wallet
     );
     await state.setState(newWalletState);
-}
-
-export const getAccounts = (state: SnapState): PublicAccount[] => {
-    return Object.values(state.wallet.accountMap).map(account => ({
-        address: account.address,
-        viewKey: account.viewKey,
-        seed: account.seed,
-    }));
 }
 
 export const findSeedForAddress = (state: SnapState, address: string): string | null => {
