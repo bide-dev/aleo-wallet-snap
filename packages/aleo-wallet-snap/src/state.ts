@@ -1,26 +1,52 @@
 import * as passworder from '@metamask/browser-passworder';
 import { Mutex } from 'async-mutex';
 
-import { PrivateAccountInfo } from './account';
+import { PrivateAccount } from './account';
 import { Bip44Node } from './types';
 
-export interface AppState {
-    accounts: PrivateAccountInfo[];
-}
+export class WalletState {
+    constructor(
+        public readonly accountIndex: number = 0,
+        // Accounts are stored as a map of address -> account
+        public readonly accountMap: Record<string, PrivateAccount> = {}
+    ) { }
 
-const EMPTY_APP_STATE: AppState = {
-    accounts: [],
+    public get accounts(): Array<PrivateAccount> {
+        return Object.values(this.accountMap);
+    }
+
+    public get addresses(): Array<string> {
+        return this.accounts.map(a => a.address);
+    }
+
+    public importAccount(account: PrivateAccount): WalletState {
+        return new WalletState(this.accountIndex, { ...this.accountMap, [account.address]: account });
+    }
+
+    public deleteAccount(address: string): WalletState {
+        const { [address]: _, ...accounts } = this.accountMap;
+        return new WalletState(this.accountIndex, accounts);
+    }
+
+    public incrementAccountIndex(): WalletState {
+        return new WalletState(this.accountIndex + 1, this.accountMap);
+    }
 }
 
 export class SnapState {
-    private mutex: Mutex;
-    public entropy: Bip44Node;
-    private _state: AppState;
+    private static readonly STATE_VERSION = 0;
+    private readonly mutex: Mutex;
+    public readonly entropy: Bip44Node;
+    private walletState: WalletState;
 
-    constructor(entropy: Bip44Node, state?: AppState) {
+    constructor(entropy: Bip44Node, walletState?: WalletState) {
         this.entropy = entropy;
         this.mutex = new Mutex();
-        this._state = state ?? EMPTY_APP_STATE;
+        this.walletState = walletState ?? new WalletState();
+    }
+
+    public get wallet(): WalletState {
+        return this.walletState;
     }
 
     public static async fromPersisted(entropy: Bip44Node): Promise<SnapState> {
@@ -28,37 +54,50 @@ export class SnapState {
         return new SnapState(entropy, appState);
     }
 
-    public getState(): AppState {
-        return this._state;
+    private static async readPersisted(entropy: Bip44Node): Promise<WalletState> {
+        const state = await request('get');
+        if (!state) {
+            return new WalletState();
+        }
+        if (state.version !== SnapState.STATE_VERSION) {
+            throw new Error(`Invalid state version: ${state.version}`);
+        }
+        return await passworder.decrypt(entropy.key, state.encrypted.walletState);
     }
 
-    public async setState(newState: AppState): Promise<void> {
+    public async setState(newState: WalletState): Promise<void> {
         await this.mutex.runExclusive(async () => {
             await this.persist(newState);
-            this._state = newState;
+            this.walletState = newState;
         });
     }
 
-    private async persist(newState: AppState) {
+    private async persist(newState: WalletState) {
         const encryptedState = {
-            passwords: await passworder.encrypt(this.entropy.key, newState),
+            version: SnapState.STATE_VERSION,
+            encrypted: {
+                walletState: await passworder.encrypt(this.entropy.key, newState)
+            },
         };
-        await wallet.request({
-            method: 'snap_manageState',
-            params: ['update', encryptedState],
-        });
+        await request('update', encryptedState);
     }
 
-    private static async readPersisted(entropy: Bip44Node): Promise<AppState> {
-        const state = await wallet.request({
-            method: 'snap_manageState',
-            params: ['get'],
-        });
-        if (state === null) {
-            return EMPTY_APP_STATE;
-        }
-        const oldState: AppState = await passworder.decrypt(entropy.key, state.passwords);
-        return oldState;
+    public async deleteState(): Promise<void> {
+        request('clear');
     }
 }
 
+const request = async (method: 'clear' | 'get' | 'update', newState?: unknown): Promise<any> => {
+    if (['get', 'clear'].includes(method) && newState) {
+        throw new Error(`Cannot ${method} with newState`);
+    }
+    if (method == 'update' && !newState) {
+        throw new Error('Cannot call update without newState');
+    }
+
+    const params = newState ? [method, newState] : [method];
+    return await wallet.request({
+        method: `snap_manageState`,
+        params,
+    });
+}

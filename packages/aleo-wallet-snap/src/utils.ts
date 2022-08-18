@@ -1,3 +1,5 @@
+import SHA3 from "sha3";
+
 export const RNG_SEED_SIZE = 32;
 
 export const getRandomBytes = (byteCount: number): Int32Array => {
@@ -10,10 +12,15 @@ export const getRandomBytes = (byteCount: number): Int32Array => {
 };
 
 // Reference: https://stackoverflow.com/a/71083193
-export const arrayBufferFromHex = (hexString: string) => {
+export const uint8ArrayFromHex = (hexString: string) => {
     const strBytes = hexString
         .replace(/^0x/i, '')
         .match(/../g) ?? [];
     return new Uint8Array(strBytes.map((byte: string) => parseInt(byte, 16))).buffer;
 }
 
+export const sha256 = (msg: string): Buffer => {
+    const hash = new SHA3(256);
+    hash.update(msg);
+    return hash.digest();
+}
