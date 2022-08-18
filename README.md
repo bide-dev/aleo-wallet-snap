@@ -21,10 +21,6 @@ Build packages in development mode with hot code reloading
 yarn dev
 ```
 
-## How it works
-
-![Snap diagram](snap-diagram.png)
-
 ## Demo
 
 [Aleo Web Wallet Snap](https://aleo-snap.netlify.app/)
