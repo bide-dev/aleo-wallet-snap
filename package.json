@@ -11,7 +11,7 @@
         "lint": "yarn workspaces foreach -vip run lint",
         "lint:errors": "yarn workspaces foreach -vip run lint -- --quiet",
         "lint:fix": "yarn workspaces foreach -vip run lint:fix",
-        "bump": "yarn workspaces foreach -vit version",
+        "bump": "yarn workspaces foreach -vit version && yarn workspaces aleo-wallet-snap manifest:fix",
         "publish": "yarn workspace aleo-wallet-snap npm publish --tolerate-republish"
     },
     "packageManager": "yarn@3.2.1"

@@ -1,6 +1,6 @@
 {
     "name": "aleo-snap-adapter",
-    "version": "0.1.3",
+    "version": "0.1.4",
     "description": "Access Aleo Snap through a typed API",
     "author": "Piotr Roslaniec <p.roslaniec@gmail.com>",
     "repository": {
