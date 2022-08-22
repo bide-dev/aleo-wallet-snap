@@ -19,8 +19,12 @@ yarn dev
 ## Publishing
 
 ```
-yarn bump <new-version>
-git add -A & git commit -m "chore(release): release <new-version>"
+yarn version:snap
+
+# Note the version outputed by the commmand above
+# Use it to bump rest of packages in the workspace:
+yarn version:others <version>
+
 yarn publish
 ```
 
