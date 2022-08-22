@@ -1,6 +1,6 @@
 {
   "name": "aleo-wallet-snap",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Aleo Wallet implemented with MetaMask Snap",
   "author": "Piotr Roslaniec <p.roslaniec@gmail.com>",
   "repository": {
@@ -27,7 +27,7 @@
     "lint:misc": "prettier '**/*.json' '**/*.md' '!CHANGELOG.md' --ignore-path .gitignore",
     "lint:fix": "yarn lint:eslint --fix && yarn lint:misc --write",
     "typecheck": "tsc --noEmit",
-    "manifest:fix": "mm-snap manifest --fix",
+    "manifest:fix": "mm-snap manifest --fix && git add snap.manifest.json",
     "version:bump": "standard-version"
   },
   "dependencies": {
