@@ -2,9 +2,8 @@ export interface PublicAccount {
     address: string;
     viewKey: string;
 }
-export interface PublicAccountWithSeed {
-    address: string;
-    viewKey: string;
+
+export interface PublicAccountWithSeed extends PublicAccount {
     seed: string;
 }
 
@@ -29,4 +28,3 @@ export type RpcMethod = keyof RpcRequest;
 export type RpcResponse = {
     [Key in keyof RpcRequest]: ReturnType<RpcRequest[Key]>;
 }[keyof RpcRequest];
-
