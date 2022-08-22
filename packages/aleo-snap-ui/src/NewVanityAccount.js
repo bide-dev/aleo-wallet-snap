@@ -1,12 +1,11 @@
 import React, { useState } from "react";
 import { Button, Card, Col, Divider, Form, Input, Row } from "antd";
 
-import { CopyButton } from "./components/CopyButton";
-import { findAddressContainingSubstring } from "./vanity";
+import { findVanityAddress } from "./vanity";
+import { Account } from "./components/Account";
 
 export const NewVanityAccount = () => {
   const [account, setAccount] = useState(null);
-  const [seed, setSeed] = useState(null);
   const [loading, setLoading] = useState(false);
   const [substr, setSubstr] = useState("");
 
@@ -15,25 +14,18 @@ export const NewVanityAccount = () => {
   const generateAccount = async () => {
     clear();
     setLoading(true);
-    setTimeout(() => {}, 100);
-    const result = await findAddressContainingSubstring(substr, 1000);
-    if (!result) {
+    setTimeout(() => { }, 100);
+    const { account } = await findVanityAddress(substr, 25);
+    if (!account) {
       // TODO: Add max epoch to use input?
       // TODO: use setError
       alert("Failed to generate a vanity account");
       setLoading(false);
       return;
     }
-    setAccount(result.account);
-    setSeed(result.seed);
+    setAccount(account);
     setLoading(false);
   };
-
-  const privateKey = () =>
-    account !== null ? "Stays safe inside MetaMask!" : "";
-  const matchingSeed = () => (seed !== null ? seed : "");
-  const viewKey = () => (account !== null ? account.viewKey : "");
-  const address = () => (account !== null ? account.address : "");
 
   const layout = { labelCol: { span: 3 }, wrapperCol: { span: 21 } };
 
@@ -49,6 +41,7 @@ export const NewVanityAccount = () => {
           <p>
             Info: Generating a vanity account could take a while. For starters,
             try: "e".
+            Note that this account will not be persisted. In order to persist it, copy the account seed and go to "Recover Account" tab.
           </p>
           <Form.Item label="Prefix" colon={false}>
             <Input
@@ -75,45 +68,12 @@ export const NewVanityAccount = () => {
           </Row>
         </Form>
         {account && (
-          <Form {...layout}>
+          <div>
             <Divider />
-            <Form.Item label="Private Key" colon={false}>
-              <Input
-                size="large"
-                placeholder="Private Key"
-                value={privateKey()}
-                addonAfter={<CopyButton data={privateKey()} />}
-                disabled
-              />
-            </Form.Item>
-            <Form.Item label="Seed" colon={false}>
-              <Input
-                size="large"
-                placeholder="Seed"
-                value={matchingSeed()}
-                addonAfter={<CopyButton data={matchingSeed()} />}
-                disabled
-              />
-            </Form.Item>
-            <Form.Item label="View Key" colon={false}>
-              <Input
-                size="large"
-                placeholder="View Key"
-                value={viewKey()}
-                addonAfter={<CopyButton data={viewKey()} />}
-                disabled
-              />
-            </Form.Item>
-            <Form.Item label="Address" colon={false}>
-              <Input
-                size="large"
-                placeholder="Address"
-                value={address()}
-                addonAfter={<CopyButton data={address()} />}
-                disabled
-              />
-            </Form.Item>
-          </Form>
+            <Account
+              account={account}
+            />
+          </div>
         )}
       </Card>
     </>

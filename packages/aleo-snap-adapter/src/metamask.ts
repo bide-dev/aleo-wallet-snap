@@ -16,7 +16,7 @@ const request = async (method: string, params: any[]) => {
     }
 
     const result = await window.ethereum.request({ method, params });
-    console.log([method, result])
+    console.log([method, params, result])
     return result;
 }
 
@@ -29,6 +29,10 @@ export function requestSnap<T extends RpcParams, U>(
     return result;
 }
 
+/**
+ * Connect to snap. Attempts to install the snap if needed.
+ * @throws If fails to connect
+ */
 export const connect = async () => {
     try {
         await request("wallet_enable", [{ wallet_snap: { [SNAP_ID]: {} } }]);
@@ -41,6 +45,6 @@ export const connect = async () => {
             console.error(error);
             alert("Error: " + (error as any).message || error);
         }
+        throw error;
     }
 }
-

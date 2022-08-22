@@ -11,7 +11,7 @@ export const NewAccount = () => {
   const createAccount = async () => {
     setLoading(true);
     setTimeout(() => { }, 100);
-    const account = await snap.getRandomAccount();
+    const account = await snap.getNewAccount();
     if (!account) {
       alert("Failed to create a new account");
       setLoading(false);
@@ -39,9 +39,9 @@ export const NewAccount = () => {
     readAccounts().catch(console.error);
   }, []);
 
-  const onDeleteAllAccounts = async () => {
+  const onDeleteWallet = async () => {
     setLoading(true);
-    await snap.deleteAllAccounts();
+    await snap.deleteWallet();
     setLoading(false);
     setAccounts([]);
   }
@@ -51,6 +51,13 @@ export const NewAccount = () => {
     await snap.deleteAccount(address);
     setLoading(false);
     setAccounts(accounts.filter(acc => acc.address !== address));
+  }
+
+  const onExportSeed = async (address) => {
+    setLoading(true);
+    const seed = await snap.getSeedForAddress(address);
+    alert(`Seed for ${address}: ${seed}`);
+    setLoading(false);
   }
 
   const layout = { labelCol: { span: 3 }, wrapperCol: { span: 21 } };
@@ -63,6 +70,9 @@ export const NewAccount = () => {
         bordered={false}
       >
         <Form {...layout} onChange={(event) => setSubstr(event.target.value)}>
+          <p>
+            Info: Generated accounts are persisted.
+          </p>
           <Row justify="center">
             <Col>
               <Button
@@ -81,7 +91,8 @@ export const NewAccount = () => {
         <AccountList
           accounts={accounts}
           onDeleteAccount={onDeleteAccount}
-          onDeleteAllAccounts={onDeleteAllAccounts}
+          onDeleteWallet={onDeleteWallet}
+          onExportSeed={onExportSeed}
         />
       </Card>
     </>

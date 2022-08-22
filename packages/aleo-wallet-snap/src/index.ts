@@ -7,7 +7,7 @@ import { PROGRAM_WASM_HEX } from './wasm';
 import * as handlers from './handlers';
 import { Bip44Node } from './types';
 import { SnapState } from './state';
-import { arrayBufferFromHex } from './utils';
+import { uint8ArrayFromHex } from './utils';
 
 let wasm: InitOutput;
 let entropy: Bip44Node;
@@ -15,7 +15,7 @@ let state: SnapState;
 
 const initializeWasm = async () => {
   try {
-    const wasmBuffer = arrayBufferFromHex(PROGRAM_WASM_HEX);
+    const wasmBuffer = uint8ArrayFromHex(PROGRAM_WASM_HEX);
     const wasmModule = await WebAssembly.compile(wasmBuffer);
     wasm = await aleoSdk.default(wasmModule);
   } catch (error) {
@@ -46,19 +46,25 @@ wallet.registerRpcMessageHandler(async (originString: string, { method, params }
       return handlers.isEnabled();
 
     case "getAccountFromSeed":
-      return handlers.getAccountFromSeed(entropy, params);
+      return handlers.getAccountFromSeed(state, params);
+
+    case "getNewAccount":
+      return handlers.getNewAccount(state);
 
     case "getRandomAccount":
-      return handlers.getRandomAccount(state, entropy);
+      return handlers.getRandomAccount(state, params);
 
     case "getAccounts":
       return handlers.getAccounts(state);
 
+    case "getSeedForAddress":
+      return handlers.getSeedForAddress(state, params);
+
     case "deleteAccount":
       return handlers.deleteAccount(state, params);
 
-    case "deleteAllAccounts":
-      return handlers.deleteAllAccounts(state);
+    case "deleteWallet":
+      return handlers.deleteWallet(state);
 
     case "signString":
       return handlers.signString(state, params);

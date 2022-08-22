@@ -1,93 +1,84 @@
 import { getBIP44AddressKeyDeriver } from '@metamask/key-tree';
-import { SHA3 } from 'sha3';
 import { Account } from 'aleo-wasm-bundler';
-import { PublicAccountInfo } from 'aleo-snap-adapter';
+import { PublicAccount, PublicAccountWithSeed } from 'aleo-snap-adapter';
 
-import { getRandomBytes, RNG_SEED_SIZE } from './utils';
+import { uint8ArrayFromHex, getRandomBytes, RNG_SEED_SIZE, sha256 } from './utils';
 import { SnapState } from './state';
-import { Bip44Node } from './types';
 
 
-export interface PrivateAccountInfo extends PublicAccountInfo {
+export interface PrivateAccount extends PublicAccount {
     privateKey: string;
+    seed: string;
 }
 
-const sha256 = (msg: string): Buffer => {
-    const hash = new SHA3(256);
-    hash.update(msg);
-    return hash.digest();
-}
-
-const makeAccountFromSeed = (seed: string): Account => {
-    return Account.from_seed(sha256(seed));
-}
-
-export const makeAccount = (entropy: Bip44Node, seed: any): PublicAccountInfo => {
-    const deriveEthAddress = getBIP44AddressKeyDeriver(entropy);
-    const addressKey0 = deriveEthAddress(0);
-    const seedWithBip44 = `${seed}${addressKey0.toString('hex')}`;
-
-    const account = makeAccountFromSeed(seedWithBip44);
-    return {
-        address: account.to_address(),
-        viewKey: account.to_view_key(),
+export const persistAccount = (accountPublic: PublicAccount, account: Account, seed: string, state: SnapState) => {
+    const newAccount: PrivateAccount = {
+        ...accountPublic,
+        privateKey: account.to_private_key(),
+        seed
     };
+    const newWalletState = state.wallet.importAccount(newAccount);
+    state.setState(newWalletState);
 }
 
-export const makeRandomAccount = async (state: SnapState, entropy: Bip44Node): Promise<PublicAccountInfo> => {
-    // We can't use the Account constructor because it relies on the bundled RNG.
-    // This RNG in turn attempts to call `process` which is unavailable in this context.
-    // const account = new Account();
-
-    // Instead, we use the `getRandomBytes` function to generate a random seed.
-    const seed = getRandomBytes(RNG_SEED_SIZE).toString();
-    const account = makeAccountFromSeed(seed);
+export const recoverAccount = (state: SnapState, seed: string): PublicAccount => {
+    const account = Account.from_seed(Buffer.from(uint8ArrayFromHex(seed)))
     const accountPublic = {
         address: account.to_address(),
         viewKey: account.to_view_key(),
     }
-
-    // Persist account
-    const accountPrivate: PrivateAccountInfo = {
-        ...accountPublic,
-        privateKey: account.to_private_key(),
-    }
-
-    writeAccount(state, accountPrivate);
-
+    persistAccount(accountPublic, account, seed, state);
     return accountPublic;
 }
 
-const writeAccount = async (state: SnapState, account: PrivateAccountInfo): Promise<SnapState> => {
-    const currentState = state.getState();
-    const existingAddresses = currentState.accounts.map(a => a.address);
-    if (existingAddresses.includes(account.address)) {
-        return state;
+export const deriveAccount = (state: SnapState, seedPrefix: string): { account: Account, seed: string } => {
+    const deriveEthAddress = getBIP44AddressKeyDeriver(state.entropy);
+    const addressKey0 = deriveEthAddress(0);
+    const seed = sha256(`${seedPrefix}${addressKey0.toString('hex')}`);
+    const account = Account.from_seed(seed);
+    return { account, seed: seed.toString('hex') };
+}
+
+export const makeNewAccount = async (state: SnapState): Promise<PublicAccount> => {
+    const seedPhrase = `account_index_${state.wallet.accountIndex}`;
+    await state.setState(state.wallet.incrementAccountIndex());
+
+    const { account, seed } = deriveAccount(state, seedPhrase);
+    const accountPublic = {
+        address: account.to_address(),
+        viewKey: account.to_view_key(),
     }
-    currentState.accounts.push(account);
-    await state.setState(currentState);
-    return state;
+    persistAccount(accountPublic, account, seed, state);
+    return accountPublic;
+}
+
+export const makeRandomAccount = (state: SnapState, entropy: string): PublicAccountWithSeed => {
+    const { account, seed } = deriveAccount(state, entropy);
+    return {
+        address: account.to_address(),
+        viewKey: account.to_view_key(),
+        seed,
+    }
 }
 
 export const deleteAccounts = async (state: SnapState, addresses: string[]): Promise<void> => {
-    const accounts = state.getState().accounts.filter(account => !addresses.includes(account.address));
-    await state.setState({ accounts });
+    const newWalletState = addresses.reduce(
+        (walletState, address) => walletState.deleteAccount(address),
+        state.wallet
+    );
+    await state.setState(newWalletState);
 }
 
-export const getAccounts = async (state: SnapState): Promise<PublicAccountInfo[]> => {
-    return state.getState().accounts.map(account => ({
-        address: account.address,
-        viewKey: account.viewKey,
-    }));
-}
-
-export const deleteAllAccounts = async (state: SnapState): Promise<void> => {
-    const addresses = state.getState().accounts.map(account => account.address)
-    await deleteAccounts(state, addresses);
+export const findSeedForAddress = (state: SnapState, address: string): string | null => {
+    const account = state.wallet.accounts.find(a => a.address === address);
+    if (!account) {
+        return null;
+    }
+    return account.seed;
 }
 
 export const signWithAccount = (state: SnapState, address: string, message: string): Uint8Array | null => {
-    const account = state.getState().accounts.find(account => account.address === address);
+    const account = state.wallet.accounts.find(a => a.address === address);
     if (!account) {
         return null;
     }
