@@ -23,7 +23,7 @@ export const getAccountFromSeed = async (seed: string): Promise<PublicAccount> =
 
 /**
  * Create a random account without persisting it, and return the account info and seed.
- * @param entropy Optional deterministic element to use in account generation.
+ * @param entropy Deterministic element to use in account generation.
  * @returns Recovered account public info.
  */
  export const getRandomAccount = async (entropy: string): Promise<PublicAccount> => {
@@ -63,7 +63,7 @@ export const getAccounts = async (): Promise<PublicAccount[]> => {
 }
 
 /**
- * Get an account seed corresponding to given the address.
+ * Get an account seed corresponding to the given address.
  * @param address Address of the account to recover seed phrase from.
  * @returns Hex-encoded account seed bytes.
  * @throws If the account is not found.

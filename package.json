@@ -14,7 +14,8 @@
         "version:snap": "yarn workspace aleo-wallet-snap version:bump",
         "version:snap:dry": "yarn workspace aleo-wallet-snap version:bump --dry-run",
         "version:others": "yarn workspaces foreach -vit --exclude aleo-wallet-snap version",
-        "publish": "yarn workspace aleo-wallet-snap npm publish --tolerate-republish"
+        "publish": "yarn workspace aleo-wallet-snap npm publish --tolerate-republish",
+        "publish:docs": "yarn workspace aleo-snap-adapter doc && yarn workspace aleo-snap-adapter doc:publish"
     },
     "packageManager": "yarn@3.2.1"
 }
