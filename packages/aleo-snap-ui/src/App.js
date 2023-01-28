@@ -86,7 +86,7 @@ function App() {
       </Content>
       <Footer style={{ textAlign: "center" }}>
         Visit{" "}
-        <a href="https://github.com/AleoHQ/aleo-wallet-snap">
+        <a href="https://github.com/piotr-roslaniec/aleo-wallet-snap">
           our Github repo
         </a>
         .

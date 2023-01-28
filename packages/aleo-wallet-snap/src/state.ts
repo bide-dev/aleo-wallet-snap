@@ -12,7 +12,7 @@ export class WalletState {
     ) { }
 
     public get accounts(): Array<PrivateAccount> {
-        return Object.values(this.accountMap);
+        return Object.values(this.accountMap) ?? [];
     }
 
     public get addresses(): Array<string> {

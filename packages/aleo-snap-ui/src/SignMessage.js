@@ -50,7 +50,7 @@ export const SignMessage = () => {
   const signedMessageHex = () => bufferToHex(Object.values(signedMessage));
 
   const { Option } = Select;
-  const selectAddressOptions = addresses.map(address => (
+  const selectAddressOptions = (addresses ?? []).map(address => (
     <Option value={address} key={address}>{address}</Option>
   ));
 
